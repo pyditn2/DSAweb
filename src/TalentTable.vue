@@ -32,19 +32,36 @@
   </template>
   
   <script>
-  export default {
-    props: {
-      talents: Array,
-      title: String
-    },
-    methods: {
-      updateCost(index) {
-        const talentType = this.title.toLowerCase().includes('körpertalente') ? 'koerpertalente' : 'naturtalente';
-        this.$emit('update-cost', index, talentType);
+export default {
+  props: {
+    talents: Array,
+    title: String
+  },
+  methods: {
+    updateCost(index) {
+      let talentType = '';
+
+      // Determine the talent type based on the title
+      if (this.title.toLowerCase().includes('körpertalente')) {
+        talentType = 'koerpertalente';
+      } else if (this.title.toLowerCase().includes('naturtalente')) {
+        talentType = 'naturtalente';
+      } else if (this.title.toLowerCase().includes('gesellschaftstalente')) {
+        talentType = 'gesellschaftstalente';
+      } else if (this.title.toLowerCase().includes('wissentalente')) {
+        talentType = 'wissentalente';
+      } else if (this.title.toLowerCase().includes('handwerkstalente')) {
+        talentType = 'handwerkstalente';  // Ensure Handwerkstalente is handled here
       }
+
+      // Emit the update-cost event with the index and talent type
+      this.$emit('update-cost', index, talentType);
     }
-  };
-  </script>
+  }
+};
+</script>
+
+
   
   <style scoped>
   table {
