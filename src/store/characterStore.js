@@ -76,19 +76,50 @@ export const useCharacterStore = defineStore('character', {
             { name: 'Steinbearbeitung', factor: 'C', desiredLevel: 0, cost: 0, skillLevel: 0, outstandingSkill: 0, inabilityLevel: 0, specialization: '' },
             { name: 'Stoffbearbeitung', factor: 'A', desiredLevel: 0, cost: 0, skillLevel: 0, outstandingSkill: 0, inabilityLevel: 0, specialization: '' }
           ]
+    },
+    stats: {
+      attributes: {
+        MU: 8,  // Mut
+        KL: 8,  // Klugheit
+        IN: 8,  // Intuition
+        CH: 8,  // Charisma
+        FF: 8,  // Fingerfertigkeit
+        GE: 8,  // Gewandtheit
+        KO: 8,  // Konstitution
+        KK: 8   // Körperkraft
+      },
+      attributeCosts: {
+        MU: 0,
+        KL: 0,
+        IN: 0,
+        CH: 0,
+        FF: 0,
+        GE: 0,
+        KO: 0,
+        KK: 0
+      }
     }
   }),
   getters: {
-    // Calculate remaining AP
-    apUebrig: (state) => {
-      return state.apStart + state.apEarned - state.totalCost
+    totalAttributeCost: (state) => {
+      // Access attributeCosts from the correct location in state
+      return Object.values(state.stats.attributeCosts).reduce((sum, cost) => sum + cost, 0)
     },
-    
-    // Calculate total cost across all talents
-    totalCost: (state) => {
+  
+    totalTalentCost: (state) => {
       return Object.values(state.talents).reduce((total, category) => {
         return total + category.reduce((sum, talent) => sum + talent.cost, 0)
       }, 0)
+    },
+  
+    totalCost() {
+      // We need to access other getters using this
+      return this.totalAttributeCost + this.totalTalentCost
+    },
+  
+    apUebrig(state) {
+      // Use state to access direct state properties
+      return state.apStart + state.apEarned - this.totalCost
     }
   },
 
@@ -97,6 +128,63 @@ export const useCharacterStore = defineStore('character', {
       const talent = this.talents[category][index]
       talent.desiredLevel = newLevel
       this.calculateCost(category, index)
+    },
+    calculateAttributeCost(attr, oldValue, newValue) {
+      console.log(`Calculating cost from ${oldValue} to ${newValue}`)
+      let cost = 0
+      // For increasing values
+      if (newValue > oldValue) {
+        for (let i = oldValue + 1; i <= newValue; i++) {
+          if (i > 14) {
+            // Changed condition: now applies to the step TO 15 and above
+            cost += 15 * (i - 13)  // Changed from (i - 14) to (i - 13)
+          } else {
+            cost += 15
+          }
+          console.log(`Level ${i} adds ${cost} cost`)
+        }
+      }
+      // For decreasing values
+      else if (newValue < oldValue) {
+        for (let i = oldValue; i > newValue; i--) {
+          if (i > 14) {
+            // Same change here
+            cost -= 15 * (i - 13)  // Changed from (i - 14) to (i - 13)
+          } else {
+            cost -= 15
+          }
+          console.log(`Level ${i} removes ${cost} cost`)
+        }
+      }
+      console.log(`Final calculated cost: ${cost}`)
+      return cost
+    },
+    updateAttribute(name, newValue) {
+      console.log('Starting updateAttribute:', name, newValue)
+      const oldValue = this.stats.attributes[name]
+      console.log('Old value:', oldValue)
+      
+      // Don't calculate cost if value hasn't changed
+      if (oldValue === newValue) {
+        console.log('Value unchanged, skipping cost calculation')
+        return
+      }
+      
+      // Ensure value is within valid range
+      const validValue = Math.max(8, Math.min(20, newValue))
+      console.log('Valid value:', validValue)
+      
+      // Only calculate and update if the value actually changed
+      if (oldValue !== validValue) {
+        // Calculate the AP cost
+        const cost = this.calculateAttributeCost(name, oldValue, validValue)
+        console.log('Calculated cost:', cost)
+        
+        // Update the attribute value and its cost
+        this.stats.attributes[name] = validValue
+        this.stats.attributeCosts[name] += cost
+        console.log('New attributeCosts:', this.stats.attributeCosts)
+      }
     },
 
     calculateCost(category, index) {
