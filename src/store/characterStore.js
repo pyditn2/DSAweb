@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia'
+import { COST_TABLES } from '../constants/costTables'
 
 export const useCharacterStore = defineStore('character', {
   state: () => ({
@@ -129,74 +130,24 @@ export const useCharacterStore = defineStore('character', {
       talent.desiredLevel = newLevel
       this.calculateCost(category, index)
     },
-    calculateAttributeCost(attr, oldValue, newValue) {
-      console.log(`Calculating cost from ${oldValue} to ${newValue}`)
-      let cost = 0
-      // For increasing values
-      if (newValue > oldValue) {
-        for (let i = oldValue + 1; i <= newValue; i++) {
-          if (i > 14) {
-            // Changed condition: now applies to the step TO 15 and above
-            cost += 15 * (i - 13)  // Changed from (i - 14) to (i - 13)
-          } else {
-            cost += 15
-          }
-          console.log(`Level ${i} adds ${cost} cost`)
-        }
-      }
-      // For decreasing values
-      else if (newValue < oldValue) {
-        for (let i = oldValue; i > newValue; i--) {
-          if (i > 14) {
-            // Same change here
-            cost -= 15 * (i - 13)  // Changed from (i - 14) to (i - 13)
-          } else {
-            cost -= 15
-          }
-          console.log(`Level ${i} removes ${cost} cost`)
-        }
-      }
-      console.log(`Final calculated cost: ${cost}`)
-      return cost
-    },
-    updateAttribute(name, newValue) {
-      console.log('Starting updateAttribute:', name, newValue)
-      const oldValue = this.stats.attributes[name]
-      console.log('Old value:', oldValue)
-      
-      // Don't calculate cost if value hasn't changed
-      if (oldValue === newValue) {
-        console.log('Value unchanged, skipping cost calculation')
-        return
-      }
-      
-      // Ensure value is within valid range
-      const validValue = Math.max(8, Math.min(20, newValue))
-      console.log('Valid value:', validValue)
-      
-      // Only calculate and update if the value actually changed
-      if (oldValue !== validValue) {
-        // Calculate the AP cost
-        const cost = this.calculateAttributeCost(name, oldValue, validValue)
-        console.log('Calculated cost:', cost)
-        
-        // Update the attribute value and its cost
-        this.stats.attributes[name] = validValue
-        this.stats.attributeCosts[name] += cost
-        console.log('New attributeCosts:', this.stats.attributeCosts)
-      }
-    },
-
+ 
     calculateCost(category, index) {
-        const talent = this.talents[category][index]
-        const costTable = {
-          A: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 14, 17, 21, 26, 32, 39, 47, 56, 66, 77, 89, 102, 116],
-          B: [0, 2, 3, 6, 9, 12, 16, 20, 24, 27, 30, 33, 36, 42, 51, 63, 78, 96, 117, 141, 168, 198, 231, 267, 306, 348],
-          C: [0, 3, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 28, 36, 48, 64, 78, 96, 117, 141, 168, 198, 231, 267, 306],
-          D: [0, 4, 6, 9, 12, 16, 20, 24, 28, 32, 36, 44, 48, 56, 68, 88, 108, 128, 156, 188, 224, 264, 306, 356, 408, 464],
-          E: [0, 0, 0, 0, 0, 0, 0, 0, 15, 30, 45, 60, 75, 90, 120, 165, 225, 300, 375, 465, 555, 645, 735, 825, 915, 1020]
-        }
-        talent.cost = costTable[talent.factor][talent.desiredLevel] || 0
+      const talent = this.talents[category][index]
+      talent.cost = COST_TABLES[talent.factor][talent.desiredLevel] || 0
+    },
+ 
+    updateAttribute(name, newValue) {
+      const oldValue = this.stats.attributes[name]
+      if (oldValue === newValue) return
+      
+      const validValue = Math.max(8, Math.min(20, newValue))
+      
+      const oldCost = COST_TABLES.E[oldValue - 1] || 0
+      const newCost = COST_TABLES.E[validValue - 1] || 0
+      const costDifference = newCost - oldCost
+      
+      this.stats.attributes[name] = validValue
+      this.stats.attributeCosts[name] += costDifference
     }
   }
 })

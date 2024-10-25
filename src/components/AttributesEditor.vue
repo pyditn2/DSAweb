@@ -1,4 +1,3 @@
-// AttributesEditor.vue
 <template>
   <div class="attributes-section">
     <h2>Attribute</h2>
@@ -40,6 +39,7 @@
 
 <script setup>
 import { useCharacterStore } from '../store/characterStore'
+import { COST_TABLES } from '@/constants/costTables';
 
 const props = defineProps({
   editable: {
@@ -68,11 +68,7 @@ const getNextLevelCost = (attr) => {
   const currentValue = store.stats.attributes[attr]
   if (currentValue >= 20) return null
   
-  // Changed condition to include level 14
-  if (currentValue >= 13) {
-    return 15 * (currentValue - 12)  // Changed from 13 to 12
-  }
-  return 15
+  return COST_TABLES.E[currentValue] - COST_TABLES.E[currentValue - 1]
 }
 
 const updateAttribute = (attr, value) => {
