@@ -8,7 +8,7 @@
         :class="{ active: activeTab === 'talents' }"
         @click="activeTab = 'talents'"
       >
-      Persönlickeit
+        Persönlickeit
       </button>
       <button 
         :class="{ active: activeTab === 'heldendokument' }"
@@ -19,52 +19,19 @@
     </div>
 
     <!-- Tab Content -->
-     
     <div class="tab-content">
-      <!-- Talents Tab -->
-      <div v-if="activeTab === 'talents'">
-        <h2>Persönlichkeit</h2>
-        <CharacterInfoEditor />
-        <AttributesEditor />
-        <APTracker />
-        <div class="talent-sections">
-          <TalentTable 
-            v-for="(talents, category) in store.talents" 
-            :key="category"
-            :title="categoryTitles[category]"
-            :category="category"
-            :talents="talents"
-          />
-        </div>
-      </div>
-
-      <!-- Heldendokument Tab -->
-      <div v-if="activeTab === 'heldendokument'">
-        <HeldenDokumentView />
-      </div>
+      <PersonlichkeitView v-if="activeTab === 'talents'" />
+      <HeldenDokumentView v-if="activeTab === 'heldendokument'" />
     </div>
   </div>
 </template>
 
 <script setup>
 import { ref } from 'vue'
-import { useCharacterStore } from './store/characterStore'
-import TalentTable from './components/TalentTable.vue'
-import APTracker from './components/APTracker.vue'
-import AttributesEditor from './components/AttributesEditor.vue'
-import CharacterInfoEditor from './components/CharacterInfoEditor.vue'
+import PersonlichkeitView from './components/PersönlichkeitView.vue'
 import HeldenDokumentView from './components/HeldenDokumentView.vue'
 
-const store = useCharacterStore()
 const activeTab = ref('talents')
-
-const categoryTitles = {
-  koerpertalente: 'Körpertalente',
-  naturtalente: 'Naturtalente',
-  gesellschaftstalente: 'Gesellschaftstalente',
-  wissentalente: 'Wissentalente',
-  handwerkstalente: 'Handwerkstalente'
-}
 </script>
 
 <style>
@@ -95,11 +62,5 @@ const categoryTitles = {
 
 .tab-content {
   padding: 1rem;
-}
-
-.talent-sections {
-  display: flex;
-  flex-direction: column;
-  gap: 2rem;
 }
 </style>
