@@ -8,7 +8,7 @@
              class="attribute-item">
           <div class="attribute-header">
             <label :for="attr">{{ getAttributeName(attr) }}</label>
-            <span class="attribute-cost">
+            <span v-if="editable" class="attribute-cost">
               AP: {{ store.stats.attributeCosts[attr] }}
             </span>
           </div>
@@ -30,7 +30,7 @@
           </div>
         </div>
       </div>
-      <div class="total-costs">
+      <div v-if="editable" class="total-costs">
         Gesamtkosten Attribute: {{ store.totalAttributeCost }} AP
       </div>
     </div>

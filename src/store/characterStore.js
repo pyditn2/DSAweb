@@ -6,6 +6,17 @@ export const useCharacterStore = defineStore('character', {
     apStart: 1100,
     apEarned: 0,
 
+    characterInfo: {
+      name: '',
+      familie: '',
+      spezies: '',
+      haarfarbe: '',
+      kultur: '',
+      titel: '',
+      charakteristika: '',
+      sonstiges: ''
+    },
+
     talents: {
         koerpertalente: [
             { name: 'Fliegen', factor: 'B', desiredLevel: 0, cost: 0, skillLevel: 0, outstandingSkill: 0, inabilityLevel: 0, specialization: '' },
@@ -148,6 +159,9 @@ export const useCharacterStore = defineStore('character', {
       
       this.stats.attributes[name] = validValue
       this.stats.attributeCosts[name] += costDifference
+    },
+    updateCharacterInfo(field, value) {
+      this.characterInfo[field] = value
     }
   }
 })

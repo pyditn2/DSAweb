@@ -3,16 +3,15 @@
     <h2>Heldendokument</h2>
     
     <!-- Display attributes in read-only mode -->
+    <CharacterInfoEditor :editable="false" />
     <AttributesEditor :editable="false" />
-    
-    <!-- Add other character information here -->
-    <div class="character-info">
       <!-- You can add more sections here later -->
-    </div>
+    
   </div>
 </template>
 
 <script setup>
+import CharacterInfoEditor from './CharacterInfoEditor.vue'
 import AttributesEditor from './AttributesEditor.vue'
 </script>
 

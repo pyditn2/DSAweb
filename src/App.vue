@@ -8,7 +8,7 @@
         :class="{ active: activeTab === 'talents' }"
         @click="activeTab = 'talents'"
       >
-        Talente
+      Persönlickeit
       </button>
       <button 
         :class="{ active: activeTab === 'heldendokument' }"
@@ -19,9 +19,12 @@
     </div>
 
     <!-- Tab Content -->
+     
     <div class="tab-content">
       <!-- Talents Tab -->
       <div v-if="activeTab === 'talents'">
+        <h2>Persönlichkeit</h2>
+        <CharacterInfoEditor />
         <AttributesEditor />
         <APTracker />
         <div class="talent-sections">
@@ -49,6 +52,7 @@ import { useCharacterStore } from './store/characterStore'
 import TalentTable from './components/TalentTable.vue'
 import APTracker from './components/APTracker.vue'
 import AttributesEditor from './components/AttributesEditor.vue'
+import CharacterInfoEditor from './components/CharacterInfoEditor.vue'
 import HeldenDokumentView from './components/HeldenDokumentView.vue'
 
 const store = useCharacterStore()
